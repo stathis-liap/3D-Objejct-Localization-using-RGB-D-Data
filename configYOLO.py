@@ -12,7 +12,7 @@ import cv2
 import random
 
 
-# Load class names
+# load class names
 classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
               "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
@@ -24,14 +24,15 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
               "teddy bear", "hair drier", "toothbrush"]
 
-# Random color for each class
+# random color for each class
 COLORS = [tuple(random.randint(0, 255) for _ in range(3)) for _ in classNames]
 
-# Font settings
+# settings
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SCALE = 0.6
 THICKNESS = 2
+YOLO_CHECKPOINT_PATH = "yolo-Weights/yolov8n.pt"
 
-# Load YOLO model
+# load YOLO model with weights
 def load_yolo_model():
-    return YOLO("yolo-Weights/yolov8n.pt")
+    return YOLO(YOLO_CHECKPOINT_PATH)
