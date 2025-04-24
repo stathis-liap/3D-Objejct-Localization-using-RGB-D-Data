@@ -22,8 +22,8 @@ class InputFromCamera:
         else:
             if not os.path.exists(self.dataset_path):
                 raise ValueError(f"Dataset path '{self.dataset_path}' does not exist.")
-            self.rgb_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('.rgb.jpg')]) # etsi ta evala prosorina giati 
-            self.depth_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('.depth.png')]) # den kserw thn morfi twn arxeiwn
+            self.rgb_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('-color.png')]) # etsi ta evala prosorina giati 
+            self.depth_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('-depth.png')]) # den kserw thn morfi twn arxeiwn
             if not self.rgb_files or not self.depth_files:
                 raise ValueError("No RGB or Depth files found in the dataset.")
 

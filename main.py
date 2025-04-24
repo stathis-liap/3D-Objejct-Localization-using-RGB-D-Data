@@ -8,13 +8,14 @@ from inputFromCamera import InputFromCamera
 
 def main():
     # initialize input frow webvam or dataset
-    input_source = InputFromCamera(use_webcam=True, dataset_path=None)  # Change use_webcam as needed
+    input_source = InputFromCamera(use_webcam=False, dataset_path='scene_02')  # Change use_webcam as needed
     model = load_yolo_model()
     sam_predictor = load_sam_model()
 
     frame_count = 0
     alpha = 0.4
-    mask_color = (0, 255, 0)  # green
+    mask_color = (255, 0, 255)  # magenda
+    pad = 30
 
     while True:
         try:
@@ -43,19 +44,23 @@ def main():
                     # find class name
                     cls = int(box.cls[0])
                     class_name = classNames[cls]
+
+                    if class_name.lower() != "bowl":
+                        continue
+
                     print("Class name -->", class_name)
 
                     # draw YOLO bounding box
-                    cv2.rectangle(rgb_frame, (x1, y1), (x2, y2), (255, 0, 255), 3)
+                    cv2.rectangle(rgb_frame, (x1-pad, y1-pad), (x2+pad, y2+pad), (255, 0, 255), 3)
 
                     # put class name
-                    org = [x1, y1]
+                    org = [x1-pad, y1-pad]
                     cv2.putText(rgb_frame, class_name, org, FONT, FONT_SCALE, COLORS[cls], THICKNESS)
 
                     # process mask only every 1 frames (an sas kollaei poly anevaste to kathe pote tha fortwnei to fastSAM)
                     if frame_count % 1 == 0:
                         try:
-                            mask = get_silhouette(sam_predictor, rgb_frame, [x1, y1, x2, y2])
+                            mask = get_silhouette(sam_predictor, rgb_frame, [x1, y1, x2, y2],pad)
                             print("Mask sum:", np.sum(mask))  
 
                             if np.sum(mask) == 0:
@@ -74,7 +79,7 @@ def main():
 
             cv2.imshow("Object Localization and Segmentation", rgb_frame)
 
-            if cv2.waitKey(1) == ord('q'):
+            if cv2.waitKey(100) == ord('q'):
                 break
 
         except Exception as e:
