@@ -22,8 +22,8 @@ class InputFromCamera:
         else:
             if not os.path.exists(self.dataset_path):
                 raise ValueError(f"Dataset path '{self.dataset_path}' does not exist.")
-            self.rgb_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('-color.png')]) # etsi ta evala prosorina giati 
-            self.depth_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('-depth.png')]) # den kserw thn morfi twn arxeiwn
+            self.rgb_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('-color.png')]) # etsi einai h morfi twn arxeiwn
+            self.depth_files = sorted([f for f in os.listdir(self.dataset_path) if f.endswith('-depth.png')]) 
             if not self.rgb_files or not self.depth_files:
                 raise ValueError("No RGB or Depth files found in the dataset.")
 
@@ -51,19 +51,12 @@ class InputFromCamera:
             depth_path = os.path.join(self.dataset_path, self.depth_files[self.dataset_idx])
 
             rgb_frame = cv2.imread(rgb_path)
-            depth_frame = cv2.imread(depth_path, cv2.IMREAD_UNCHANGED)  # Depth image in single channel (den eimai sigouros gia auto alla etsi to eixe o typas pou to phra)
-
-            # Ensure RGB is in BGR format (default for OpenCV)
-            if rgb_frame is None or depth_frame is None:
-                raise RuntimeError(f"Failed to load RGB or Depth frame from dataset at index {self.dataset_idx}.")
+            depth_frame = cv2.imread(depth_path, cv2.IMREAD_UNCHANGED)
 
             self.dataset_idx += 1
             return rgb_frame, depth_frame
 
     def release(self):
-        """
-        Release resources (for webcam).
-        """
         if self.use_webcam:
             self.cap.release()
 
