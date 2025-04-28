@@ -1,0 +1,6 @@
+torch==2.7.0
+torchvision==0.22.0
+ultralytics==8.0.122
+segment-anything-fast==0.1.2
+semantic-version==2.10.0
+opencv-python==4.11.0.86
