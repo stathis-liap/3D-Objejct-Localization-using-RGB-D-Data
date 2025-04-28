@@ -4,4 +4,5 @@ fastsam-weights
 yolo-weights
 requirements.txt
 
-sam_vit_h_
+__pycache__
+.vscode
