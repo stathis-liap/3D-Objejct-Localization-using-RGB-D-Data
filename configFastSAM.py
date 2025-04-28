@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from fastsam import FastSAM, FastSAMPrompt
 
-DEVICE = "cuda"  # "cuda" if you have Nvidia GPU
+DEVICE = "cpu"  # "cuda" if you have Nvidia GPU
 FASTSAM_CHECKPOINT_PATH = "fastsam-weights/FastSAM-x.pt"
 
 def load_sam_model():

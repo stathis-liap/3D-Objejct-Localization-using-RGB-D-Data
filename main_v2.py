@@ -4,8 +4,10 @@ import math
 from configYOLO import classNames, COLORS, FONT, FONT_SCALE, THICKNESS, load_yolo_model
 from configFastSAM import load_sam_model, get_silhouette
 from inputFromCamera import InputFromCamera
+from coordinates import Calculate_Coordinates
 
 def main():
+    calculate_source = Calculate_Coordinates()
     input_source = InputFromCamera(use_webcam=False, dataset_path='scene_02')
     model = load_yolo_model()
     sam_predictor = load_sam_model()
@@ -78,16 +80,13 @@ def main():
                             depth_overlay[mask] = mask_color
 
                             # Calculate object center
-                            ys, xs = np.where(mask)
-                            if len(xs) > 0 and len(ys) > 0:
-                                center_x = int(np.mean(xs))
-                                center_y = int(np.mean(ys))
+                            center_x, center_y = calculate_source.calculate_object_center(mask)
+                            print(f"Object center: ({center_x}, {center_y})")
 
-                                if center_x < depth_frame.shape[1] and center_y < depth_frame.shape[0]:
-                                    depth_value = depth_frame[center_y, center_x]
-                                    object_centers.append((center_x, center_y, depth_value))
-
-                                    print(f"Object center: ({center_x}, {center_y}), Depth: {depth_value:.2f}")
+                            if center_x <= depth_frame.shape[1] and center_y <= depth_frame.shape[0]:
+                                depth_value = depth_frame[center_y, center_x]
+                                object_centers.append((center_x, center_y, depth_value))
+                                print(f"Object center: ({center_x}, {center_y}), Depth: {depth_value:.2f}")
                         except Exception as e:
                             print(f"Error during segmentation: {e}")
 
@@ -96,29 +95,22 @@ def main():
                 for j in range(i + 1, len(object_centers)):
                     x1, y1, z1 = object_centers[i]
                     x2, y2, z2 = object_centers[j]
+                    r, theta, z = calculate_source.get_coordinates(x1, y1, z1, x2, y2, z2)
+                    print(f"Coordinates: r = {r}, theta = {theta}, z = {z}")
+                    
 
-                    # Convert pixel distances to meters (adjust your scale factor if needed)
-                    # Here assuming depth is already in millimeters
-                    X1_m = x1
-                    Y1_m = y1
-                    Z1_m = z1 / 1000.0
-
-                    X2_m = x2
-                    Y2_m = y2
-                    Z2_m = z2 / 1000.0
 
                     # Compute 3D Euclidean distance
-                    dist = math.sqrt((X1_m - X2_m) ** 2 + (Y1_m - Y2_m) ** 2 + (Z1_m - Z2_m) ** 2)/ 1000.0
+                    dist, mid_x, mid_y = calculate_source.calculate_distance(x1, y1, z1, x2, y2, z2)
+                    print(f"Distance between object {i} and {j}: {dist:.2f} meters")
                     # Draw line between objects
                     cv2.line(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
-                    # Display distance text
-                    mid_x = (x1 + x2) // 2
-                    mid_y = (y1 + y2) // 2
-                    cv2.putText(rgb_frame, f"{dist:.2f}m", (mid_x, mid_y), FONT, 0.6, (0, 255, 0), 2)
-
-                    print(f"Distance between object {i} and {j}: {dist:.2f} meters")
-
+                    cv2.putText(rgb_frame, f"r = {r[0]}, theta = {theta[0]}, z = {z[0]}", (x1, y1), FONT, 0.6, (0, 255, 0), 2)
+                    cv2.putText(rgb_frame, f"r = {r[1]}, theta = {theta[1]}, z = {z[1]}", (mid_x, mid_y), FONT, 0.6, (0, 255, 0), 2)
+                    cv2.putText(rgb_frame, f"{dist:.2f}m", (x2, y2), FONT, 0.6, (0, 255, 0), 2)
+            
+            # Compute coordinates
+            
             # Blend the depth overlay
             depth_vis = cv2.addWeighted(depth_overlay, alpha, depth_vis, 1 - alpha, 0)
 
