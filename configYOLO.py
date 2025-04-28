@@ -1,16 +1,15 @@
 import torch
+from ultralytics import YOLO
+import torch
+import cv2
+import random
+
 # Patch torch.load to always use weights_only=False αλλιώς να βάλετε το PiTorch σε version μικρότερο του 2.6 (μου έβγαλε την πίστη αυτό εδώ πέρα)
 _orig_load = torch.load
 def patched_load(*args, **kwargs):
     kwargs['weights_only'] = False
     return _orig_load(*args, **kwargs)
 torch.load = patched_load
-
-from ultralytics import YOLO
-import torch
-import cv2
-import random
-
 
 # load class names
 classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
