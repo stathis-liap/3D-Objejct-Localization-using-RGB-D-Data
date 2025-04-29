@@ -2,7 +2,7 @@
 scene_02
 fastsam-weights
 yolo-weights
-requirements.txt
+
 
 __pycache__
 .vscode
