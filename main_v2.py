@@ -16,17 +16,16 @@ def main():
     alpha = 0.4
     mask_color = (255, 0, 255)  # Magenta
     pad = 30
-
     while True:
         try:
             rgb_frame, depth_frame = input_source.get_frame()
             frame_count += 1
 
-            print(f"Depth frame shape: {depth_frame.shape}")
-            print(f"RGB frame shape: {rgb_frame.shape}")
-            print("_" * 50)
-            print(f"RGB Frame count: {frame_count}")
-            print("_" * 50)
+            #print(f'\033[36mDepth frame shape: {depth_frame.shape}\033[0m')
+            #print(f'\033[36mRGB frame shape: {rgb_frame.shape}\033[0m')
+            print('\033[36m_\033[0m' * 50)
+            print(f'\033[36mRGB Frame count: {frame_count}\033[0m')
+            print('\033[36m_\033[0m' * 50)
 
             results = model(rgb_frame, stream=True)
 
@@ -34,7 +33,6 @@ def main():
             depth_vis = cv2.normalize(depth_frame, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
             depth_vis = cv2.cvtColor(depth_vis, cv2.COLOR_GRAY2BGR)
             depth_overlay = depth_vis.copy()
-
             object_centers = []  # Store (x, y, z) centers
 
             for r in results:
@@ -45,10 +43,10 @@ def main():
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
 
                     confidence = math.ceil((box.conf[0] * 100)) / 100
-                    print(f"Confidence ---> {confidence}")
+                    print(f'\033[32mConfidence ---> {confidence}\033[0m')
 
                     if confidence < 0.5:
-                        print(f"Skipping detection with confidence {confidence:.2f}")
+                        print(f'\033[33mSkipping detection with confidence {confidence:.2f}\033[0m')
                         continue
 
                     cls = int(box.cls[0])
@@ -57,7 +55,7 @@ def main():
                     if class_name.lower() not in ["bowl", "cup"]:
                         continue
 
-                    print(f"Class name --> {class_name}, Confidence --> {confidence:.2f}")
+                    print(f'\033[34mClass name --> {class_name}, Confidence --> {confidence:.2f}\033[0m')
 
                     # Draw bounding box
                     cv2.rectangle(rgb_frame, (x1 - pad, y1 - pad), (x2 + pad, y2 + pad), COLORS[cls], 3)
@@ -66,10 +64,10 @@ def main():
                     if frame_count % 1 == 0:
                         try:
                             mask = get_silhouette(sam_predictor, rgb_frame, [x1, y1, x2, y2], pad)
-                            print(f"Mask sum: {np.sum(mask)}")
+                            #print(f"Mask sum: {np.sum(mask)}")
 
                             if np.sum(mask) == 0:
-                                print("Empty mask")
+                                print('\031[33mEmpty mask\033[0m')
                                 continue
 
                             overlay = rgb_frame.copy()
@@ -81,33 +79,32 @@ def main():
 
                             # Calculate object center
                             center_x, center_y = calculate_source.calculate_object_center(mask)
-                            print(f"Object center: ({center_x}, {center_y})")
+                            #print(f"Object center: ({center_x}, {center_y})")
 
                             if center_x <= depth_frame.shape[1] and center_y <= depth_frame.shape[0]:
                                 depth_value = depth_frame[center_y, center_x]
                                 object_centers.append((center_x, center_y, depth_value))
                                 print(f"Object center: ({center_x}, {center_y}), Depth: {depth_value:.2f}")
                         except Exception as e:
-                            print(f"Error during segmentation: {e}")
+                            print(f'\033[31mError during segmentation: {e}\033[0m')
 
             # After processing all objects, compute distances
             for i in range(len(object_centers)):
                 for j in range(i + 1, len(object_centers)):
                     x1, y1, z1 = object_centers[i]
                     x2, y2, z2 = object_centers[j]
-                    r, theta, z = calculate_source.get_coordinates(x1, y1, z1, x2, y2, z2)
-                    print(f"Coordinates: r = {r}, theta = {theta}, z = {z}")
-                    
+                    x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(x1, y1, z1, frame_count, scale_factor=0.1)
+                    x2_world, y2_world, z2_world = calculate_source.transform_camera_to_world(x2, y2, z2, frame_count, scale_factor=0.1)
 
 
                     # Compute 3D Euclidean distance
                     dist, mid_x, mid_y = calculate_source.calculate_distance(x1, y1, z1, x2, y2, z2)
-                    print(f"Distance between object {i} and {j}: {dist:.2f} meters")
+                    print(f'\033[36mDistance between object {i} and {j}: {dist:.2f} cm\033[0m')
                     # Draw line between objects
-                    cv2.line(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(rgb_frame, f"r = {r[0]}, theta = {theta[0]}, z = {z[0]}", (x1, y1), FONT, 0.6, (0, 255, 0), 2)
-                    cv2.putText(rgb_frame, f"r = {r[1]}, theta = {theta[1]}, z = {z[1]}", (mid_x, mid_y), FONT, 0.6, (0, 255, 0), 2)
-                    cv2.putText(rgb_frame, f"{dist:.2f}m", (x2, y2), FONT, 0.6, (0, 255, 0), 2)
+                    #cv2.line(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(rgb_frame, f"x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}", (int(x1), int(y1)), FONT, 0.4, (0, 255, 0), 2)
+                    cv2.putText(rgb_frame, f"x={x2_world:.1f} y={y2_world:.1f} z={z2_world:.1f}", (int(x2), int(y2)), FONT, 0.4, (0, 255, 0), 2)
+                    #cv2.putText(rgb_frame, f"{dist:.2f}cm", (mid_x, mid_y), FONT, 0.6, (0, 255, 0), 2)
             
             # Compute coordinates
             
@@ -117,12 +114,11 @@ def main():
             # Show frames
             cv2.imshow("RGB Frame with Segmentation", rgb_frame)
             cv2.imshow("Depth Frame", depth_vis)
-
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
         except Exception as e:
-            print(f"Error: {e}")
+            print(f'\033[31mError: {e}\033[0m')
             break
 
     input_source.release()
