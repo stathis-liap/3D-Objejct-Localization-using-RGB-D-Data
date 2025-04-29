@@ -7,7 +7,7 @@ class Calculate_Coordinates:
         self.length = 170 # cm
         self.pose_data = []
 
-    def transform_camera_to_world(self, u, v, depth, frame_idx, fx=525, fy=525, cx=319.5, cy=319.5, scale_factor=1.0, pose_file='data/02.pose'):
+    def transform_camera_to_world(self, u, v, depth, frame_idx, fx=525, fy=525, cx=319.5, cy=239.5, scale_factor=1.0, pose_file='data/02.pose'):
         import numpy as np
         from scipy.spatial.transform import Rotation as R
 
@@ -15,7 +15,7 @@ class Calculate_Coordinates:
         z = depth * scale_factor  # Convert depth to meters
         x = (u - cx) * z / fx
         y = (v - cy) * z / fy
-    
+
         # Read the pose for the given frame
         with open(pose_file, 'r') as f:
             lines = f.readlines()
@@ -35,7 +35,12 @@ class Calculate_Coordinates:
         T[:3, :3] = rot
         T[:3, 3] = [tx, ty, tz]
 
+        # Invert to get camera → world transformation
+        T_inv = np.linalg.inv(T)
+
         # Transform the point
         p_cam = np.array([x, y, z, 1])
-        p_world = T @ p_cam
+        p_world = T_inv @ p_cam
+
         return p_world[:3]
+
