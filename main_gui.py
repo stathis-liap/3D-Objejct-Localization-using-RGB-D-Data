@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from configYOLO import classNames, COLORS, FONT, FONT_SCALE, THICKNESS, load_yolo_model
+from configYOLO import classNames, FONT, FONT_SCALE, THICKNESS, load_yolo_model
 from configFastSAM import load_sam_model, get_silhouette
 from configDepth import (clip_mask_to_box,calculate_average_depth, normalize_depth_frame, find_mask_center)
 from inputFromCamera import InputFromCamera
@@ -55,10 +55,7 @@ class Main():
 
                         # Draw bounding box
                         cv2.rectangle(rgb_frame, (x1 - self.pad, y1 - self.pad), (x2 + self.pad, y2 + self.pad), self.box_color, 3)
-                        label_origin = (x1 - self.pad, y1 - self.pad)
-                        cv2.putText(rgb_frame, class_name, (x1 - self.pad, y1 - self.pad - 10), FONT, FONT_SCALE, self.label_color, THICKNESS)
-
-        
+                        
                         try:
                             #get the mask
                             mask = get_silhouette(sam_predictor, rgb_frame, [x1, y1, x2, y2], self.pad)
@@ -66,32 +63,35 @@ class Main():
                             if np.sum(mask) == 0:
                                 print('\031[33mEmpty mask\033[0m')
                                 continue
+
                             #clip mask
                             mask_clipped = clip_mask_to_box(mask, x1, y1, x2, y2)
 
-                            #add the mask to the rgb frame
+                            #add mask
                             overlay = rgb_frame.copy()
                             overlay[mask] = self.mask_color
                             rgb_frame = cv2.addWeighted(overlay, self.alpha, rgb_frame, 1 - self.alpha, 0)
 
-                            #make the depth frame more readable and calc average depth
+                            #depth and center
                             depth_vis = normalize_depth_frame(depth_frame)
                             cz = calculate_average_depth(depth_frame, mask_clipped)
-
-                            #calculate center of maks
                             cx, cy = find_mask_center(mask_clipped)
 
                             # Compute the world coordinates
                             x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(cx, cy, cz, frame_count, scale_factor=0.1)
                             
+    
+                            # dot at the center of mask
+                            cv2.circle(rgb_frame, (cx, cy), 5, (0, 0, 255), -1)  # Red dot
 
-                            norm_depth = cz / 10000
-                            print(f"Object center: ({cx}, {cy}), Average depth: {norm_depth:.2f}")
+                            # labels
+                            label_x, label_y = x1 - self.pad, y1 - self.pad
+                            line_spacing = 15
 
-                            # info_text = f"{class_name} ({norm_depth:.2f} m)"
-                            info_text = f"{class_name}, x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}"
-                            cv2.putText(rgb_frame, info_text, label_origin, FONT, 0.4, self.label_color, THICKNESS)
-
+                            cv2.putText(rgb_frame, class_name, (label_x, label_y), FONT, FONT_SCALE, self.label_color, THICKNESS)
+                            info_text = f"x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}"
+                            cv2.putText(rgb_frame, info_text, (label_x, label_y + line_spacing),
+                                        FONT, FONT_SCALE, self.label_color, THICKNESS)
                         except Exception as e:
                             print(f'\033[31mError during segmentation: {e}\033[0m')
                 
