@@ -21,8 +21,6 @@ def main():
             rgb_frame, depth_frame = input_source.get_frame()
             frame_count += 1
 
-            #print(f'\033[36mDepth frame shape: {depth_frame.shape}\033[0m')
-            #print(f'\033[36mRGB frame shape: {rgb_frame.shape}\033[0m')
             print('\033[36m_\033[0m' * 50)
             print(f'\033[36mRGB Frame count: {frame_count}\033[0m')
             print('\033[36m_\033[0m' * 50)
@@ -80,7 +78,15 @@ def main():
                             # Calculate object center
                             center_x, center_y = calculate_source.calculate_object_center(mask)
                             #print(f"Object center: ({center_x}, {center_y})")
+                            
+                            x1, y1, z1 = object_centers[i]
+                            x2, y2, z2 = object_centers[j]
+                            x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(x1, y1, z1, frame_count, scale_factor=0.1)
+                            x2_world, y2_world, z2_world = calculate_source.transform_camera_to_world(x2, y2, z2, frame_count, scale_factor=0.1)
 
+                            cv2.putText(rgb_frame, f"x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}", (int(x1), int(y1)), FONT, 0.4, (0, 255, 0), 2)
+                            cv2.putText(rgb_frame, f"x={x2_world:.1f} y={y2_world:.1f} z={z2_world:.1f}", (int(x2), int(y2)), FONT, 0.4, (0, 255, 0), 2)
+              
                             if center_x <= depth_frame.shape[1] and center_y <= depth_frame.shape[0]:
                                 depth_value = depth_frame[center_y, center_x]
                                 object_centers.append((center_x, center_y, depth_value))
@@ -88,25 +94,21 @@ def main():
                         except Exception as e:
                             print(f'\033[31mError during segmentation: {e}\033[0m')
 
-            # After processing all objects, compute distances
-            for i in range(len(object_centers)):
-                for j in range(i + 1, len(object_centers)):
-                    x1, y1, z1 = object_centers[i]
-                    x2, y2, z2 = object_centers[j]
-                    x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(x1, y1, z1, frame_count, scale_factor=0.1)
-                    x2_world, y2_world, z2_world = calculate_source.transform_camera_to_world(x2, y2, z2, frame_count, scale_factor=0.1)
+            # # After processing all objects, compute distances
+            # for i in range(len(object_centers)):
+            #     for j in range(i + 1, len(object_centers)):
+            #         x1, y1, z1 = object_centers[i]
+            #      x2, y2, z2 = object_centers[j]
+            # #         ###remember 
 
 
-                    # Compute 3D Euclidean distance
-                    dist, mid_x, mid_y = calculate_source.calculate_distance(x1, y1, z1, x2, y2, z2)
-                    print(f'\033[36mDistance between object {i} and {j}: {dist:.2f} cm\033[0m')
-                    # Draw line between objects
-                    #cv2.line(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(rgb_frame, f"x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}", (int(x1), int(y1)), FONT, 0.4, (0, 255, 0), 2)
-                    cv2.putText(rgb_frame, f"x={x2_world:.1f} y={y2_world:.1f} z={z2_world:.1f}", (int(x2), int(y2)), FONT, 0.4, (0, 255, 0), 2)
-                    #cv2.putText(rgb_frame, f"{dist:.2f}cm", (mid_x, mid_y), FONT, 0.6, (0, 255, 0), 2)
+            #         # Compute 3D Euclidean distance
+            #         # dist, mid_x, mid_y = calculate_source.calculate_distance(x1, y1, z1, x2, y2, z2)
+            #         # print(f'\033[36mDistance between object {i} and {j}: {dist:.2f} cm\033[0m')
+            #         # Draw line between objects
+            #         #cv2.line(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            #               #cv2.putText(rgb_frame, f"{dist:.2f}cm", (mid_x, mid_y), FONT, 0.6, (0, 255, 0), 2)
             
-            # Compute coordinates
             
             # Blend the depth overlay
             depth_vis = cv2.addWeighted(depth_overlay, alpha, depth_vis, 1 - alpha, 0)

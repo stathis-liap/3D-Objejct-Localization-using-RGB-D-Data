@@ -4,10 +4,12 @@ from configYOLO import classNames, COLORS, FONT, FONT_SCALE, THICKNESS, load_yol
 from configFastSAM import load_sam_model, get_silhouette
 from configDepth import (clip_mask_to_box,calculate_average_depth, normalize_depth_frame, find_mask_center)
 from inputFromCamera import InputFromCamera
+from coordinates import Calculate_Coordinates
 
 def main():
     # initialize input source and models
     input_source = InputFromCamera(use_webcam=False, dataset_path='scene_02')  # Change as needed
+    calculate_source = Calculate_Coordinates()
     model = load_yolo_model()
     sam_predictor = load_sam_model()
 
@@ -65,16 +67,21 @@ def main():
 
                         #make the depth frame more readable and calc average depth
                         depth_vis = normalize_depth_frame(depth_frame)
-                        average_depth = calculate_average_depth(depth_frame, mask_clipped)
+                        cz = calculate_average_depth(depth_frame, mask_clipped)
 
                         #calculate center of maks
                         cx, cy = find_mask_center(mask_clipped)
 
-                        norm_depth = average_depth / 10000
+                        # Compute the world coordinates
+                        x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(cx, cy, cz, frame_count, scale_factor=0.1)
+                        
+
+                        norm_depth = cz / 10000
                         print(f"Object center: ({cx}, {cy}), Average depth: {norm_depth:.2f}")
 
-                        info_text = f"{class_name} ({norm_depth:.2f} m)"
-                        cv2.putText(rgb_frame, info_text, label_origin, FONT, FONT_SCALE, COLORS[cls], THICKNESS)
+                        # info_text = f"{class_name} ({norm_depth:.2f} m)"
+                        info_text = f"{class_name}, x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}"
+                        cv2.putText(rgb_frame, info_text, label_origin, FONT, 0.4, COLORS[cls], THICKNESS)
 
                     except Exception as e:
                         print(f"Error during segmentation/depth processing: {e}")
