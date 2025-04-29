@@ -84,7 +84,7 @@ def main():
                         cv2.putText(rgb_frame, info_text, label_origin, FONT, 0.4, COLORS[cls], THICKNESS)
 
                     except Exception as e:
-                        print(f"Error during segmentation/depth processing: {e}")
+                        print(f'\033[31mError during segmentation/depth processing: {e}\033[0m')
                         continue
 
             # display 
@@ -95,7 +95,7 @@ def main():
                 break
 
         except Exception as e:
-            print(f"Error: {e}")
+            print(f'\033[31mError: {e}\033[0m')
             break
 
     input_source.release()
