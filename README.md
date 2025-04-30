@@ -6,17 +6,16 @@ It processes a live feed from an RGB-D camera (or a recorded dataset) to identif
 
 
 # Features
- - Live or offline support: use a real camera or pre-recorded datasets.
+ - Live or pre-recorded support: use a real camera or pre-recorded datasets.
 
  - YOLOv8 Object Detection: Fast and accurate object detection with bounding boxes.
 
- - SAM (Segment Anything Model): Precise object segmentation by generating masks from detected objects.
+ - fastSAM (Segment Anything Model): Precise object segmentation by generating masks from detected objects.
 
  - Depth-Based Distance Calculation:
 
- - Measure the real-world distance from the camera to each detected object.
+ - Measure the real-world coordinates of each detected object.
 
- - Calculate the distance between multiple objects in 3D space.
 
 
 # Pipeline Overview
@@ -39,7 +38,7 @@ It processes a live feed from an RGB-D camera (or a recorded dataset) to identif
 
  - For each object, locate its center using the mask.
 
- - Fetch the corresponding depth value (in mm).
+ - Fetch the corresponding depth value (in meters).
 
 ## 3D Distance Calculation:
 
@@ -47,7 +46,7 @@ It processes a live feed from an RGB-D camera (or a recorded dataset) to identif
 
    - Distance between camera and object.
 
-   - Distance between multiple objects.
+   - Real world coordinates of objects.
 
  
 ## Visualization (GUI):
@@ -56,7 +55,7 @@ Show RGB images with bounding boxes and masks.
 
 Show depth frames with object overlays.
 
-Display distances interactively in a beautiful window.
+Display coordinates interactively in a beautiful window.
 
 
 
@@ -65,7 +64,7 @@ Python 3.8+
 
 YOLOv8 for real-time object detection
 
-Segment Anything (SAM) for instance segmentation
+Segment Anything (fastSAM) for instance segmentation
 
 OpenCV for frame handling and image processing
 
@@ -119,8 +118,7 @@ Numpy for efficient numerical operations
 🤝 Contributions
 This project was a collaboration between:
 Stathis Liapodimitris
-Kostantinos
-Kyriakopoylos
+Kostantinos Kyriakopoulos
 Stavros Stathopoulos
 
 📜 License
