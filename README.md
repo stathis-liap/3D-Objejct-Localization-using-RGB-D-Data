@@ -93,7 +93,7 @@ Numpy for efficient numerical operations
     
 ## Run the main GUI pipeline:
 
-    python main_v2.py
+    python main.py
 
         
 
