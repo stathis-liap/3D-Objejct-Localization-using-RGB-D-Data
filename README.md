@@ -1,6 +1,6 @@
 # 3D Object Localization using RGB-D Data
 A full pipeline for 3D object detection, segmentation, and localization using RGB-D data.
-It processes a live feed from an RGB-D camera (or a recorded dataset) to identify objects, extract their silhouettes, and compute real-world distances based on depth information.
+It processes a live feed from an RGB-D camera (or a recorded dataset) to identify objects, extract their silhouettes, and compute real-world coordinates based on depth information.
 
 ![pipeline drawio](https://github.com/user-attachments/assets/04e944a2-878d-4af4-b9b3-3a49f142726b)
 
