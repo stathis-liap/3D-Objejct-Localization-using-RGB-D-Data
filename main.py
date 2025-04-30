@@ -8,7 +8,7 @@ from coordinates import Calculate_Coordinates
 from object_tracker import ObjectTracker
 from depthStabilizer import DepthStabilizer
 
-class Main():
+class Pipeline():
     def __init__(self, label_color, box_color, mask_color, alpha, pad, confidence_threeshold, sam_weights_path, yolo_weights_path, dataset_path, use_data_set):
         self.label_color = label_color[::-1] #YOLO demands its colors in BGR Pattern
         self.box_color = box_color[::-1]
