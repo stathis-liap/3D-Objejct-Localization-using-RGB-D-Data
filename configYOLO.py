@@ -30,8 +30,7 @@ COLORS = [tuple(random.randint(0, 255) for _ in range(3)) for _ in classNames]
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SCALE = 0.6
 THICKNESS = 2
-YOLO_CHECKPOINT_PATH = "yolo-Weights/yolov8n.pt"
 
 # load YOLO model with weights
-def load_yolo_model():
+def load_yolo_model(YOLO_CHECKPOINT_PATH):
     return YOLO(YOLO_CHECKPOINT_PATH)

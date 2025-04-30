@@ -4,9 +4,8 @@ import cv2
 from fastsam import FastSAM, FastSAMPrompt
 
 DEVICE = "cpu"  # "cuda" if you have Nvidia GPU
-FASTSAM_CHECKPOINT_PATH = "fastsam-weights/FastSAM-x.pt"
 
-def load_sam_model():
+def load_sam_model(FASTSAM_CHECKPOINT_PATH):
     return FastSAM(FASTSAM_CHECKPOINT_PATH)
 
 def get_silhouette(model, image, box, padding=0):
