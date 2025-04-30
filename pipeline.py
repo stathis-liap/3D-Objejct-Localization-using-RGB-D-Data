@@ -93,9 +93,9 @@ class Pipeline():
                             cz = calculate_average_depth(depth_vis, mask_clipped)
                             cz = depth_stabilizer.add_and_average(cz)
 
-                            if cz <= 0 or cz > 15000:  # Adjust thresholds based on your depth range
-                                print(f"Invalid depth value: {cz}, skipping")
-                                continue
+                            # if cz <= 0 or cz > 15000:  # adjust thresholds based on your depth range
+                            #     print(f"Invalid depth value: {cz}, skipping")
+                            #     continue
 
                             cx, cy = find_mask_center(mask_clipped)
 

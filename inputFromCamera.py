@@ -39,7 +39,7 @@ class InputFromCamera:
             success, rgb_frame = self.cap.read()
             if not success:
                 raise RuntimeError("Error: Could not read from webcam.")
-            # afou sto webcam den exoume depth aplws epistrefei mhdenika
+            # webcam does not have depth data so we set them to zero
             depth_frame = np.zeros_like(rgb_frame)
             return rgb_frame, depth_frame
         else:

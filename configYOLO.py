@@ -4,7 +4,7 @@ import torch
 import cv2
 import random
 
-# Patch torch.load to always use weights_only=False αλλιώς να βάλετε το PiTorch σε version μικρότερο του 2.6 (μου έβγαλε την πίστη αυτό εδώ πέρα)
+# Patch torch.load to always use weights_only=False or use PiTorch v.2.6 or less
 _orig_load = torch.load
 def patched_load(*args, **kwargs):
     kwargs['weights_only'] = False
