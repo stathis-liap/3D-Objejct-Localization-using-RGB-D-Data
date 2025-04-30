@@ -112,10 +112,10 @@ class Pipeline():
                             label_x, label_y = x1 - self.pad, y1 - self.pad
                             line_spacing = 15
 
-                            cv2.putText(rgb_frame, class_name, (label_x, label_y), FONT, FONT_SCALE, COLORS[cls], THICKNESS)
+                            cv2.putText(rgb_frame, class_name, (label_x, label_y), FONT, FONT_SCALE, self.label_color, THICKNESS)
                             info_text = f"x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}"
                             cv2.putText(rgb_frame, info_text, (label_x, label_y + line_spacing),
-                                    FONT, FONT_SCALE, COLORS[cls], THICKNESS)
+                                    FONT, FONT_SCALE, self.label_color, THICKNESS)
 
                         except Exception as e:
                             print(f'\033[31mError during segmentation: {e}\033[0m')
