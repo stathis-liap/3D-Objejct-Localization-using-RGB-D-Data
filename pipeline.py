@@ -8,6 +8,8 @@ from coordinates import Calculate_Coordinates
 from object_tracker import ObjectTracker
 from depthStabilizer import DepthStabilizer
 
+import csv
+
 class Pipeline():
     def __init__(self, label_color, box_color, mask_color, alpha, pad, confidence_threeshold, sam_weights_path, yolo_weights_path, dataset_path, use_data_set):
         self.label_color = label_color[::-1] #YOLO demands its colors in BGR Pattern
@@ -31,6 +33,11 @@ class Pipeline():
         DEPTH_SCALE = 0.001
 
         frame_count = 0
+
+        output_file = open('coordinates.csv', mode='w', newline='')
+        csv_writer = csv.writer(output_file)
+        csv_writer.writerow(['frame', 'label', 'x_world', 'y_world', 'z_world'])  
+        tracker = ObjectTracker(alpha=0.5)
         
         tracker = ObjectTracker(alpha=0.5)
 
@@ -105,10 +112,11 @@ class Pipeline():
                             label_x, label_y = x1 - self.pad, y1 - self.pad
                             line_spacing = 15
 
-                            cv2.putText(rgb_frame, class_name, (label_x, label_y), FONT, FONT_SCALE, self.label_color, THICKNESS)
+                            cv2.putText(rgb_frame, class_name, (label_x, label_y), FONT, FONT_SCALE, COLORS[cls], THICKNESS)
                             info_text = f"x={x1_world:.1f} y={y1_world:.1f} z={z1_world:.1f}"
                             cv2.putText(rgb_frame, info_text, (label_x, label_y + line_spacing),
-                                        FONT, FONT_SCALE, self.label_color, THICKNESS)
+                                    FONT, FONT_SCALE, COLORS[cls], THICKNESS)
+
                         except Exception as e:
                             print(f'\033[31mError during segmentation: {e}\033[0m')
                 
