@@ -2,6 +2,9 @@
 A full pipeline for 3D object detection, segmentation, and localization using RGB-D data.
 It processes a live feed from an RGB-D camera (or a recorded dataset) to identify objects, extract their silhouettes, and compute real-world distances based on depth information.
 
+![pipeline drawio](https://github.com/user-attachments/assets/04e944a2-878d-4af4-b9b3-3a49f142726b)
+
+
 # Features
  - Live or offline support: use a real camera or pre-recorded datasets.
 
@@ -72,15 +75,28 @@ Numpy for efficient numerical operations
 
 # Repository Structure
 
-        ├── main.py               # Main script (basic mode)
-        ├── main_v2.py            # Main script (GUI-enabled)
+        ├── main.py               # Main script 
+        ├── configDepth           # Configure the Depth data
         ├── configYOLO.py         # Load YOLO models and config
         ├── configFastSAM.py      # Load SAM models and helper functions
+        ├── coordinates.py        # Computes the World Coordinates
+        ├── depthStabilizer.py    # Filters for the depth data
+        ├── gui.py                # GUI 
         ├── inputFromCamera.py    # Handles camera or dataset input
+        ├── object_tracker.py     # Tracks the trajectory of the object
+        ├── pipeline.py           # Coordinates all the scripts
         ├── README.md             # This file
         ├── requirements.txt      # Required Python packages
-        └── utils/
-            └── helpers.py        # (optional) Helper functions
+        ├── data/
+            └── meta data from the image
+        ├── Fastsam-weights/
+           └── pretrained weights for the fastSAM Model
+        ├── yolo-Weights/
+           └── pretrained weights for the YOLO Model
+        ├── images/
+           └── images used from the GUI
+        └── scene02/
+           └── RGB-D dataset
 # Setup Instructions
 ## Clone the repository:
 
