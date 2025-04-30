@@ -2,6 +2,7 @@
 scene_02
 fastsam-weights
 yolo-weights
+.csv
 
 
 __pycache__
