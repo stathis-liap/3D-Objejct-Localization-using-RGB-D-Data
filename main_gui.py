@@ -48,7 +48,7 @@ class Main():
                         cls = int(box.cls[0])
                         class_name = classNames[cls]
 
-                        if class_name.lower() not in ["bowl", "cup"]:
+                        if class_name.lower() not in ["bowl"]:
                             continue
 
                         print(f"Detected: {class_name} with confidence {confidence:.2f}")

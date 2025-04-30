@@ -223,5 +223,5 @@ class SettingsMenu():
             color.append(int(string[i]+string[i+1], 16))
         print(reversed(color))
         return tuple(reversed(color))
-            
+        
 StartMenu()
