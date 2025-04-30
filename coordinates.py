@@ -7,15 +7,15 @@ class Calculate_Coordinates:
         self.length = 170 # cm
         self.pose_data = []
 
-    def transform_camera_to_world(self, u, v, depth, frame_idx, fx=525, fy=525, cx=319.5, cy=239.5, scale_factor=1.0, pose_file='data/02.pose'):
+    def transform_camera_to_world(self, u, v, depth, frame_idx, fx=1050, fy=1050, cx=319.5, cy=239.5, scale_factor=1.0, pose_file='data/02.pose'):
         import numpy as np
         from scipy.spatial.transform import Rotation as R
 
-        print("Depth =", depth)
-        homogenousPixelVector = np.array([u, v, 1])
-        K = np.zeros((3,3))
-        K[0,0], K[1,1], K[2,2], K[0,2], K[1,2] = fx, fy, 1.0, cx, cy
-        K_inv = np.linalg.inv(K)
+        # Convert pixel coordinates to camera coordinates
+        z = depth * scale_factor  # Convert depth to meters
+        x = (u - cx) * z / fx
+        y = (v - cy) * z / fy
+
         # Read the pose for the given frame
         with open(pose_file, 'r') as f:
             lines = f.readlines()
@@ -27,16 +27,21 @@ class Calculate_Coordinates:
         if len(pose_values) != 7:
             raise ValueError(f"Expected 7 values in pose, got {len(pose_values)}")
 
+        #changed this !!!!
         qx, qy, qz, qw, tx, ty, tz = pose_values
-        rot = R.from_quat([-qx, -qy, qz, qw]).as_matrix()
-        rot_inv = np.linalg.inv(rot) 
-        t = np.array([tx, ty, tz])
-        
-        # Build the full 4x4 transformation matrix
-        
-        scaledPixel = np.dot(scale_factor, homogenousPixelVector)
-        correctedFromCameraParameters = np.dot(scaledPixel, K_inv)
-        correctedFromCameraPosition = np.subtract(correctedFromCameraParameters, t)
-        worldCords = np.dot(correctedFromCameraPosition, rot_inv)
+        rot = R.from_quat([-qx, qy, qz, qw]).as_matrix()
 
-        return worldCords
+        # Build the full 4x4 transformation matrix
+        T = np.eye(4)
+        T[:3, :3] = rot
+        T[:3, 3] = [tx, ty, tz]
+
+        # Invert to get camera → world transformation
+        T_inv = np.linalg.inv(T)
+
+        # Transform the point
+        p_cam = np.array([x, y, z, 1])
+        p_world = T_inv @ p_cam
+
+        return p_world[:3]
+

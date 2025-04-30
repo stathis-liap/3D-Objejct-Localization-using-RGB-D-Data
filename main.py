@@ -5,6 +5,8 @@ from configFastSAM import load_sam_model, get_silhouette
 from configDepth import (clip_mask_to_box, calculate_average_depth, normalize_depth_frame, find_mask_center)
 from inputFromCamera import InputFromCamera
 from coordinates import Calculate_Coordinates
+from object_tracker import ObjectTracker
+from depthStabilizer import DepthStabilizer
 
 import csv
 
@@ -16,12 +18,14 @@ def main():
     model = load_yolo_model()
     sam_predictor = load_sam_model()
 
+    DEPTH_SCALE = 0.001
+
     frame_count = 0
 
     output_file = open('coordinates1.csv', mode='w', newline='')
     csv_writer = csv.writer(output_file)
     csv_writer.writerow(['frame', 'label', 'x_world', 'y_world', 'z_world'])  
-
+    tracker = ObjectTracker(alpha=0.5)
 
     mask_color = (255, 0, 255)  
     box_color = (255, 0, 255)
@@ -74,11 +78,25 @@ def main():
 
                         # depth and center
                         depth_vis = normalize_depth_frame(depth_frame)
-                        cz = calculate_average_depth(depth_frame, mask_clipped)
+                        
+                        depth_stabilizer = DepthStabilizer()
+
+                        cz = calculate_average_depth(depth_vis, mask_clipped)
+                        cz = depth_stabilizer.add_and_average(cz)
+                        
+                        if cz <= 0 or cz > 15000:  # Adjust thresholds based on your depth range
+                            print(f"Invalid depth value: {cz}, skipping")
+                            continue
+
+                        print(cz)
+                        
                         cx, cy = find_mask_center(mask_clipped)
 
                         # world coordinates
-                        x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(cx, cy, cz, frame_count, scale_factor=0.01)
+                        smoothed = tracker.smooth(frame_count, [cx, cy, cz])
+                        cx, cy, cz = smoothed
+                        x1_world, y1_world, z1_world = calculate_source.transform_camera_to_world(cx, -cy, -cz, frame_count, scale_factor=-1e-2)
+
                         csv_writer.writerow([frame_count, class_name, x1_world, y1_world, z1_world])
 
                         #norm_depth = cz / 10000
