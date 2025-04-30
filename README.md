@@ -1,8 +1,8 @@
-# 🛰️ 3D Object Localization using RGB-D Data
+# 3D Object Localization using RGB-D Data
 A full pipeline for 3D object detection, segmentation, and localization using RGB-D data.
 It processes a live feed from an RGB-D camera (or a recorded dataset) to identify objects, extract their silhouettes, and compute real-world distances based on depth information.
 
-# ✨ Features
+# Features
  - Live or offline support: use a real camera or pre-recorded datasets.
 
  - YOLOv8 Object Detection: Fast and accurate object detection with bounding boxes.
@@ -16,7 +16,7 @@ It processes a live feed from an RGB-D camera (or a recorded dataset) to identif
  - Calculate the distance between multiple objects in 3D space.
 
 
-# 🛠️ Pipeline Overview
+# Pipeline Overview
 ## Input Handling:
 
  - Capture RGB-D frames either live (camera) or from dataset files.
@@ -57,7 +57,7 @@ Display distances interactively in a beautiful window.
 
 
 
-# 🔧 Technologies Used
+# Technologies Used
 Python 3.8+
 
 YOLOv8 for real-time object detection
@@ -70,7 +70,7 @@ DearPyGUI for professional GUI design
 
 Numpy for efficient numerical operations
 
-# 📚 Repository Structure
+# Repository Structure
 
         ├── main.py               # Main script (basic mode)
         ├── main_v2.py            # Main script (GUI-enabled)
@@ -81,7 +81,7 @@ Numpy for efficient numerical operations
         ├── requirements.txt      # Required Python packages
         └── utils/
             └── helpers.py        # (optional) Helper functions
-# ⚙️ Setup Instructions
+# Setup Instructions
 ## Clone the repository:
 
     git clone https://github.com/stathis-liap/3D-Objejct-Localization-using-RGB-D-Data
@@ -101,7 +101,7 @@ Numpy for efficient numerical operations
         
 
 🤝 Contributions
-This project was a coluboration between:
+This project was a collaboration between:
 Stathis Liapodimitris
 Kostantinos
 Kyriakopoylos
