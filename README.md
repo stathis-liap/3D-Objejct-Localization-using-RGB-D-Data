@@ -90,6 +90,9 @@ Numpy for efficient numerical operations
 ## Install dependencies:
 
     pip install -r requirements.txt
+
+## Install FastSAM Models weights
+    https://github.com/ultralytics/assets/releases/download/v8.3.0/FastSAM-x.pt
     
 ## Run the main GUI pipeline:
 
