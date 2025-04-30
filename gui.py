@@ -1,5 +1,5 @@
 import tkinter as tk
-import main_gui
+import pipeline
 from tkinter import colorchooser, filedialog
 class StartMenu():
     settingsMenu = None
@@ -38,7 +38,7 @@ class StartMenu():
             self.eyeMovement2 = tk.PhotoImage(file = "eye2.png")
             eyeButton.configure(image = self.eyeMovement2)
             self.eyeState = 0
-        self.video = main_gui.Main(__class__.label_color, 
+        self.video = pipeline.Pipeline(__class__.label_color, 
                                    __class__.box_color, 
                                    __class__.mask_color, 
                                    __class__.alpha, 
@@ -218,7 +218,7 @@ class SettingsMenu():
         print(string)
         color = []
         if(string == None):
-            return main_gui.Main.label_color
+            return pipeline.Pipeline.label_color
         for i in range(1, len(string), 2):
             color.append(int(string[i]+string[i+1], 16))
         print(reversed(color))
