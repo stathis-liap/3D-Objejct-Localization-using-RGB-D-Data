@@ -23,7 +23,7 @@ class StartMenu():
     def createMenu(self):
         self.titleLabel = tk.Label(self.root, text="3D \nOBJECT LOCALIZATION \nUSING RGB-D ", font = "Arial 40")
         self.titleLabel.pack(side = "top")
-        self.eyeMovement1 = tk.PhotoImage(file = "eye1.png")
+        self.eyeMovement1 = tk.PhotoImage(file = "./images/eye1.png")
         self.eyeState = 1
         self.startButton = tk.Button(self.root, image = self.eyeMovement1, command=lambda: self.start(self.startButton), bd = 0)
         self.settingsButton = tk.Button(self.root, text = "Settings", font = "Arial 25", bd = 0, command=self.openSettingsMenu)
@@ -31,11 +31,11 @@ class StartMenu():
         self.startButton.pack(side = "bottom")
     def start(self, eyeButton):
         if self.eyeState == 0:
-            self.eyeMovement1 = tk.PhotoImage(file = "eye1.png")
+            self.eyeMovement1 = tk.PhotoImage(file = "./images/eye1.png")
             eyeButton.configure(image = self.eyeMovement1)
             self.eyeState = 1
         else:
-            self.eyeMovement2 = tk.PhotoImage(file = "eye2.png")
+            self.eyeMovement2 = tk.PhotoImage(file = "./images/eye2.png")
             eyeButton.configure(image = self.eyeMovement2)
             self.eyeState = 0
         self.video = pipeline.Pipeline(__class__.label_color, 
