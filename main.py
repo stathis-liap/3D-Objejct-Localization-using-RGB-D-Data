@@ -6,6 +6,5 @@ if __name__ == "main":
         
         The GUI is created using the Tkinter library.
         The StartMenu function is called to display the main menu of the application.
-        The GUI is designed to be user-friendly and interactive, allowing users to navigate through different options.
         '''
     gui.StartMenu()
